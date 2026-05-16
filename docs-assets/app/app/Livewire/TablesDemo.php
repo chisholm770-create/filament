@@ -64,6 +64,7 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Schema;
 use Livewire\Component;
 use stdClass;
 
@@ -77,7 +78,7 @@ class TablesDemo extends Component implements HasActions, HasSchemas, HasTable
 
     public function mount(): void
     {
-        $this->tableConfiguration = request()->get('table');
+        $this->tableConfiguration = request()->get('table', 'example');
     }
 
     public function example(Table $table): Table
@@ -2247,7 +2248,9 @@ class TablesDemo extends Component implements HasActions, HasSchemas, HasTable
 
     public function emptyState(Table $table): Table
     {
+        Schema::disableForeignKeyConstraints();
         Post::truncate();
+        Schema::enableForeignKeyConstraints();
 
         return $table
             ->query(Post::query());
@@ -2328,8 +2331,11 @@ class TablesDemo extends Component implements HasActions, HasSchemas, HasTable
 
     public function postsTable(Table $table, bool $hasSeededPosts = true): Table
     {
+        Schema::disableForeignKeyConstraints();
         User::truncate();
         Post::truncate();
+        Schema::enableForeignKeyConstraints();
+
         Post::insert([
             [
                 'title' => 'What is Filament?',
@@ -2399,7 +2405,10 @@ class TablesDemo extends Component implements HasActions, HasSchemas, HasTable
 
     public function usersTable(Table $table): Table
     {
+        Schema::disableForeignKeyConstraints();
         User::truncate();
+        Schema::enableForeignKeyConstraints();
+
         User::insert([
             [
                 'name' => 'Dan Harrin',
